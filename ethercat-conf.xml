@@ -9,16 +9,26 @@
 		<slave idx="6" type="generic" vid="00400000" pid="00000715" configPdos="true" name="x-servo">
 			<dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="0"/>
 			<watchdog divider="2498" intervals="1000"/>
+			<sdoConfig idx="2000" subIdx="08">
+				<sdoDataRaw data="01 00"/>
+			</sdoConfig>
 			<syncManager idx="2" dir="out">
 				<pdo idx="1600">
 					<pdoEntry idx="6040" subIdx="00" bitLen="16" halPin="control-word" halType="u32"/>
+					<pdoEntry idx="6060" subIdx="00" bitLen="8" halPin="control-mode" halType="s32"/>
 					<pdoEntry idx="607A" subIdx="00" bitLen="32" halPin="target-position" halType="s32"/>
 					<pdoEntry idx="60B8" subIdx="00" bitLen="16" halPin="touch-probe-function" halType="float"/>
+					<pdoEntry idx="607C" subIdx="00" bitLen="32" halPin="home-offset" halType="s32"/>
+					<pdoEntry idx="6098" subIdx="00" bitLen="8" halPin="homing-method" halType="s32"/>
+					<pdoEntry idx="6099" subIdx="01" bitLen="32" halPin="homing-high-velocity" halType="u32"/>
+					<pdoEntry idx="6099" subIdx="02" bitLen="32" halPin="homing-low-velocity" halType="u32"/>
+					<pdoEntry idx="609A" subIdx="00" bitLen="32" halPin="homing-acceleration" halType="u32"/>
 				</pdo>
 			</syncManager>
 			<syncManager idx="3" dir="in">
 				<pdo idx="1A00">
 					<pdoEntry idx="6041" subIdx="00" bitLen="16" halPin="status-word" halType="u32"/>
+					<pdoEntry idx="6061" subIdx="00" bitLen="8" halPin="mode-display" halType="s32"/>
 					<pdoEntry idx="6064" subIdx="00" bitLen="32" halPin="position-actual" halType="s32"/>
 					<pdoEntry idx="606C" subIdx="00" bitLen="32" halPin="velocity-actual" halType="s32"/>
 					<pdoEntry idx="603F" subIdx="00" bitLen="16" halPin="fault-code" halType="float"/>
@@ -40,16 +50,26 @@
 		<slave idx="7" type="generic" vid="00400000" pid="00000715" configPdos="true" name="y-servo">
 			<dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="0"/>
 			<watchdog divider="2498" intervals="1000"/>
+			<sdoConfig idx="2000" subIdx="08">
+				<sdoDataRaw data="01 00"/>
+			</sdoConfig>
 			<syncManager idx="2" dir="out">
 				<pdo idx="1600">
 					<pdoEntry idx="6040" subIdx="00" bitLen="16" halPin="control-word" halType="u32"/>
+					<pdoEntry idx="6060" subIdx="00" bitLen="8" halPin="control-mode" halType="s32"/>
 					<pdoEntry idx="607A" subIdx="00" bitLen="32" halPin="target-position" halType="s32"/>
 					<pdoEntry idx="60B8" subIdx="00" bitLen="16" halPin="touch-probe-function" halType="float"/>
+					<pdoEntry idx="607C" subIdx="00" bitLen="32" halPin="home-offset" halType="s32"/>
+					<pdoEntry idx="6098" subIdx="00" bitLen="8" halPin="homing-method" halType="s32"/>
+					<pdoEntry idx="6099" subIdx="01" bitLen="32" halPin="homing-high-velocity" halType="u32"/>
+					<pdoEntry idx="6099" subIdx="02" bitLen="32" halPin="homing-low-velocity" halType="u32"/>
+					<pdoEntry idx="609A" subIdx="00" bitLen="32" halPin="homing-acceleration" halType="u32"/>
 				</pdo>
 			</syncManager>
 			<syncManager idx="3" dir="in">
 				<pdo idx="1A00">
 					<pdoEntry idx="6041" subIdx="00" bitLen="16" halPin="status-word" halType="u32"/>
+					<pdoEntry idx="6061" subIdx="00" bitLen="8" halPin="mode-display" halType="s32"/>
 					<pdoEntry idx="6064" subIdx="00" bitLen="32" halPin="position-actual" halType="s32"/>
 					<pdoEntry idx="606C" subIdx="00" bitLen="32" halPin="velocity-actual" halType="s32"/>
 					<pdoEntry idx="603F" subIdx="00" bitLen="16" halPin="fault-code" halType="float"/>
@@ -71,16 +91,26 @@
 		<slave idx="8" type="generic" vid="00400000" pid="00000715" configPdos="true" name="z-servo">
 			<dcConf assignActivate="300" sync0Cycle="*1" sync0Shift="0"/>
 			<watchdog divider="2498" intervals="1000"/>
+			<sdoConfig idx="2000" subIdx="08">
+				<sdoDataRaw data="01 00"/>
+			</sdoConfig>
 			<syncManager idx="2" dir="out">
 				<pdo idx="1600">
 					<pdoEntry idx="6040" subIdx="00" bitLen="16" halPin="control-word" halType="u32"/>
+					<pdoEntry idx="6060" subIdx="00" bitLen="8" halPin="control-mode" halType="s32"/>
 					<pdoEntry idx="607A" subIdx="00" bitLen="32" halPin="target-position" halType="s32"/>
 					<pdoEntry idx="60B8" subIdx="00" bitLen="16" halPin="touch-probe-function" halType="float"/>
+					<pdoEntry idx="607C" subIdx="00" bitLen="32" halPin="home-offset" halType="s32"/>
+					<pdoEntry idx="6098" subIdx="00" bitLen="8" halPin="homing-method" halType="s32"/>
+					<pdoEntry idx="6099" subIdx="01" bitLen="32" halPin="homing-high-velocity" halType="u32"/>
+					<pdoEntry idx="6099" subIdx="02" bitLen="32" halPin="homing-low-velocity" halType="u32"/>
+					<pdoEntry idx="609A" subIdx="00" bitLen="32" halPin="homing-acceleration" halType="u32"/>
 				</pdo>
 			</syncManager>
 			<syncManager idx="3" dir="in">
 				<pdo idx="1A00">
 					<pdoEntry idx="6041" subIdx="00" bitLen="16" halPin="status-word" halType="u32"/>
+					<pdoEntry idx="6061" subIdx="00" bitLen="8" halPin="mode-display" halType="s32"/>
 					<pdoEntry idx="6064" subIdx="00" bitLen="32" halPin="position-actual" halType="s32"/>
 					<pdoEntry idx="606C" subIdx="00" bitLen="32" halPin="velocity-actual" halType="s32"/>
 					<pdoEntry idx="603F" subIdx="00" bitLen="16" halPin="fault-code" halType="float"/>
