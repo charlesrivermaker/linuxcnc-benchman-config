@@ -1,0 +1,114 @@
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
+loadusr -W lcec_conf ethercat-conf.xml
+loadrt lcec
+loadrt cia402 count=3
+
+addf lcec.read-all servo-thread
+addf cia402.0.read-all servo-thread
+addf cia402.1.read-all servo-thread
+addf cia402.2.read-all servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+addf lcec.write-all servo-thread
+addf cia402.0.write-all servo-thread
+addf cia402.1.write-all servo-thread
+addf cia402.2.write-all servo-thread
+
+#*************************
+#  AXIS X
+#*************************
+
+setp cia402.0.csp-mode 1
+setp cia402.0.pos-scale 655360
+setp cia402.0.velo-scale 655360
+
+net x-pos-cmd <= joint.0.motor-pos-cmd
+net x-pos-fb  <= joint.0.motor-pos-fb
+net x-enable  <= joint.0.amp-enable-out
+#net x-vel-cmd <= joint.0.vel-cmd
+
+net x-enable  => cia402.0.enable
+net x-pos-cmd => cia402.0.pos-cmd
+net x-pos-fb  => cia402.0.pos-fb
+net x-amp-fault => joint.0.amp-fault-in <= cia402.0.drv-fault
+
+net x-status-word lcec.0.x-servo.status-word => cia402.0.statusword
+net x-drv-act-pos lcec.0.x-servo.position-actual => cia402.0.drv-actual-position
+#net x-opmode-display lcec.0.x-servo.get-mode => cia402.0.opmode-display
+#net x-drv-act-velo lcec.0.x-servo.actual-velocity => cia402.0.drv-actual-velocity
+
+net x-controlword cia402.0.controlword => lcec.0.x-servo.control-word
+net x-drv-target-pos cia402.0.drv-target-position => lcec.0.x-servo.target-position
+#net x-modes-of-operation cia402.0.opmode => lcec.0.x-servo.set-mode
+#net x-drv-target-velo cia402.0.drv-target-velocity => lcec.0.x-servo.target-velocity
+
+#
+#  AXIS Y
+#
+
+setp cia402.1.csp-mode 1
+setp cia402.1.pos-scale 655360
+setp cia402.1.velo-scale 655360
+
+net y-pos-cmd <= joint.1.motor-pos-cmd
+net y-pos-fb  <= joint.1.motor-pos-fb
+net y-enable  <= joint.1.amp-enable-out
+
+net y-enable  => cia402.1.enable
+net y-pos-cmd => cia402.1.pos-cmd
+net y-pos-fb  => cia402.1.pos-fb
+net y-amp-fault => joint.1.amp-fault-in <= cia402.1.drv-fault
+
+net y-status-word lcec.0.y-servo.status-word => cia402.1.statusword
+net y-drv-act-pos lcec.0.y-servo.position-actual => cia402.1.drv-actual-position
+#net y-opmode-display lcec.0.y-servo.get-mode => cia402.1.opmode-display
+#net y-drv-act-velo lcec.0.y-servo.actual-velocity => cia402.1.drv-actual-velocity
+
+net y-controlword cia402.1.controlword => lcec.0.y-servo.control-word
+net y-drv-target-pos cia402.1.drv-target-position => lcec.0.y-servo.target-position
+#net y-modes-of-operation cia402.1.opmode => lcec.0.y-servo.set-mode
+#net y-drv-target-velo cia402.1.drv-target-velocity => lcec.0.y-servo.target-velocity
+
+#
+#  AXIS Z
+#
+setp cia402.2.csp-mode 1
+setp cia402.2.pos-scale 655360
+setp cia402.2.velo-scale 655360
+
+net z-pos-cmd <= joint.2.motor-pos-cmd
+net z-pos-fb  <= joint.2.motor-pos-fb
+net z-enable  <= joint.2.amp-enable-out
+
+net z-enable  => cia402.2.enable
+net z-pos-cmd => cia402.2.pos-cmd
+net z-pos-fb  => cia402.2.pos-fb
+net z-amp-fault => joint.2.amp-fault-in <= cia402.2.drv-fault
+
+net z-status-word lcec.0.z-servo.status-word => cia402.2.statusword
+net z-drv-act-pos lcec.0.z-servo.position-actual => cia402.2.drv-actual-position
+#net z-opmode-display lcec.0.z-servo.get-mode => cia402.2.opmode-display
+#net z-drv-act-velo lcec.0.z-servo.actual-velocity => cia402.2.drv-actual-velocity
+
+net z-controlword cia402.2.controlword => lcec.0.z-servo.control-word
+net z-drv-target-pos cia402.2.drv-target-position => lcec.0.z-servo.target-position
+#net z-modes-of-operation cia402.2.opmode => lcec.0.z-servo.set-mode
+#net z-drv-target-velo cia402.2.drv-target-velocity => lcec.0.z-servo.target-velocity
+
+net atc-down-switch lcec.0.EL1008-digital-in-1.din-0
+net atc-up-switch lcec.0.EL1008-digital-in-1.din-1
+net atc-in-switch lcec.0.EL1008-digital-in-1.din-2
+net atc-out-switch lcec.0.EL1008-digital-in-1.din-3
+
+#net platter-down-button lcec.0.EL1008-digital-in-1.din-4-not
+net platter-index-button lcec.0.EL1008-digital-in-1.din-5-not
+#net drawbar-release-button lcec.0.EL1008-digital-in-1.din-6-not
+
+net atc-down-solenoid lcec.0.EL2008-digital-out-1.dout-1 lcec.0.EL1008-digital-in-1.din-4-not
+net atc-in-solenoid lcec.0.EL2008-digital-out-1.dout-2
+net spindle-clamp-solenoid lcec.0.EL2008-digital-out-1.dout-4 lcec.0.EL1008-digital-in-1.din-6-not
+
+
+
+setp iocontrol.0.emc-enable-in 1
