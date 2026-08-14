@@ -182,6 +182,18 @@ static int cia_1joint_state_machine(int joint_num)
         chomestate[joint_num] = CIA_BEGIN;
     }
 
+    // The drive moves the joint on its own during CIA homing, invisible to LinuxCNC's
+    // trajectory planner. Glue the commanded position to actual feedback every cycle
+    // so the core following-error check (pos_cmd vs pos_fb, runs regardless of homing
+    // state) never sees the drive-driven motion as an error.
+    if (chomestate[joint_num] == CIA_BEGIN || chomestate[joint_num] == CIA_RUNNING)
+    {
+        joints[joint_num].free_tp.curr_pos = joints[joint_num].pos_fb;
+        joints[joint_num].free_tp.pos_cmd = joints[joint_num].pos_fb;
+        joints[joint_num].pos_cmd = joints[joint_num].pos_fb;
+        joints[joint_num].motor_pos_cmd = joints[joint_num].motor_pos_fb;
+    }
+
     switch (chomestate[joint_num])
     {
     case CIA_BEGIN:
