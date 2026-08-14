@@ -136,6 +136,4 @@ net atc-down-solenoid lcec.0.EL2008-digital-out-1.dout-1 lcec.0.EL1008-digital-i
 net atc-in-solenoid lcec.0.EL2008-digital-out-1.dout-2
 net spindle-clamp-solenoid lcec.0.EL2008-digital-out-1.dout-4 lcec.0.EL1008-digital-in-1.din-6-not
 
-
-
 setp iocontrol.0.emc-enable-in 1

@@ -31,7 +31,7 @@ option homemod;
 option extra_setup;
 ;;
 
-#define HOMING_BASE /usr/include/linuxcnc/src/emc/motion/homing.c
+#define HOMING_BASE /home/cnc/linuxcnc-2.9.10/src/emc/motion/homing.c
 
 #define STR(s) #s
 #define XSTR(s) STR(s)

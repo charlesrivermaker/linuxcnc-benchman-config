@@ -25,18 +25,22 @@ set ::watchlist {
     pin+lcec.0.z-servo.neg-limit
     pin+lcec.0.z-servo.position-actual
     pin+lcec.0.z-servo.pos-limit
-    pin+lcec.0.EL2008-digital-out-1.dout-0
-    pin+lcec.0.EL2008-digital-out-1.dout-1
-    pin+lcec.0.EL2008-digital-out-1.dout-2
-    pin+lcec.0.EL2008-digital-out-1.dout-3
-    pin+lcec.0.EL2008-digital-out-1.dout-4
-    pin+lcec.0.EL1008-digital-in-1.din-0
     sig+atc-down-solenoid
     sig+atc-down-switch
     sig+atc-up-switch
     sig+atc-in-solenoid
     sig+atc-in-switch
     sig+atc-out-switch
+    pin+cia402.0.controlword
+    pin+cia402.0.drv-target-position
+    pin+cia402.0.enable
+    pin+cia402.0.opmode
+    pin+cia402.0.stat-homing
+    pin+cia402.0.statusword
+    sig+x-amp-fault
+    sig+x-controlword
+    sig+y-controlword
+    sig+z-controlword
 }
 set ::workmode watchhal
 set ::watchInterval 100
