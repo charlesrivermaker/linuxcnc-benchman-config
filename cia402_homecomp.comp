@@ -36,6 +36,11 @@ option extra_setup;
 #define STR(s) #s
 #define XSTR(s) STR(s)
 
+// Cycles the drive's homing-completion statusword bits must hold true, in a row,
+// before we trust them and hand control back to normal motion. At SERVO_PERIOD=1ms
+// this is ~100ms, matching the debounce cia402.comp itself uses for stat_homed.
+#define CIA_SETTLE_CYCLES 100
+
 #include "motion.h"
 #include "homing.h"
 
@@ -170,15 +175,33 @@ static int cia_1joint_state_machine(int joint_num)
     } cia_home_state_t;
 
     static cia_home_state_t chomestate[EMCMOT_MAX_JOINTS] = {0};
+    static int settle_count[EMCMOT_MAX_JOINTS] = {0};
     cia_home_state_t nextcstate;
 
     if (H[joint_num].home_state == HOME_IDLE)
+    {
+        // Core motion aborts homing (e.g. on a following-error fault) by resetting
+        // home_state to HOME_IDLE on its own, independent of our chomestate. Without
+        // this, an abort mid-sequence would leave chomestate/H[].homing/start_cia_homing
+        // stuck forever, since the CIA_FINISHED cleanup below would never run again --
+        // permanently blocking jogging and re-homing.
+        if (chomestate[joint_num] != CIA_IDLE)
+        {
+            rtapi_print_msg(RTAPI_MSG_ERR,
+                            "cia402_homecomp: joint %d homing aborted, resetting\n", joint_num);
+            chomestate[joint_num] = CIA_IDLE;
+            settle_count[joint_num] = 0;
+            ciaH[joint_num].start_cia_homing = 0;
+            H[joint_num].homing = 0;
+        }
         return 0;
+    }
 
     if ((H[joint_num].home_state == HOME_START) && (chomestate[joint_num] == CIA_IDLE))
     {
         H[joint_num].homing = 1;
         H[joint_num].homed = 0;
+        settle_count[joint_num] = 0;
         chomestate[joint_num] = CIA_BEGIN;
     }
 
@@ -203,10 +226,24 @@ static int cia_1joint_state_machine(int joint_num)
         chomestate[joint_num] = nextcstate;
         break;
     case CIA_RUNNING:
+        // Require the drive's completion bits to hold for CIA_SETTLE_CYCLES in a row
+        // before trusting them -- cia402.comp itself uses a similar debounce (100
+        // cycles) before trusting its own stat_homed, because the axis can still be
+        // settling for a few cycles right after the statusword bits first flip. Handing
+        // control back to normal motion before that settling is done is what was
+        // tripping the following-error fault right after homing appeared to finish.
         if (ciaH[joint_num].Status.b.HomingCompletedOutput && ciaH[joint_num].Status.b.HomingComplete)
         {
-            nextcstate = CIA_FINISHED;
-            chomestate[joint_num] = nextcstate;
+            settle_count[joint_num]++;
+            if (settle_count[joint_num] >= CIA_SETTLE_CYCLES)
+            {
+                nextcstate = CIA_FINISHED;
+                chomestate[joint_num] = nextcstate;
+            }
+        }
+        else
+        {
+            settle_count[joint_num] = 0;
         }
         break;
     case CIA_FINISHED:
