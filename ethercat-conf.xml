@@ -12,6 +12,12 @@
 			<sdoConfig idx="2000" subIdx="08">
 				<sdoDataRaw data="01 00"/>
 			</sdoConfig>
+			<!-- 2010.09h homing time limit, U32 ms: padded to 120000 (120s) as a safety
+			     margin above the drive's 60000ms default, in case a search still runs
+			     long during commissioning while speeds are being tuned. -->
+			<sdoConfig idx="2010" subIdx="09">
+				<sdoDataRaw data="C0 D4 01 00"/>
+			</sdoConfig>
 			<syncManager idx="2" dir="out">
 				<pdo idx="1600">
 					<pdoEntry idx="6040" subIdx="00" bitLen="16" halPin="control-word" halType="u32"/>
@@ -53,6 +59,12 @@
 			<sdoConfig idx="2000" subIdx="08">
 				<sdoDataRaw data="01 00"/>
 			</sdoConfig>
+			<!-- 2010.09h homing time limit, U32 ms: padded to 120000 (120s) as a safety
+			     margin above the drive's 60000ms default, in case a search still runs
+			     long during commissioning while speeds are being tuned. -->
+			<sdoConfig idx="2010" subIdx="09">
+				<sdoDataRaw data="C0 D4 01 00"/>
+			</sdoConfig>
 			<syncManager idx="2" dir="out">
 				<pdo idx="1600">
 					<pdoEntry idx="6040" subIdx="00" bitLen="16" halPin="control-word" halType="u32"/>
@@ -93,6 +105,12 @@
 			<watchdog divider="2498" intervals="1000"/>
 			<sdoConfig idx="2000" subIdx="08">
 				<sdoDataRaw data="01 00"/>
+			</sdoConfig>
+			<!-- 2010.09h homing time limit, U32 ms: padded to 120000 (120s) as a safety
+			     margin above the drive's 60000ms default, in case a search still runs
+			     long during commissioning while speeds are being tuned. -->
+			<sdoConfig idx="2010" subIdx="09">
+				<sdoDataRaw data="C0 D4 01 00"/>
 			</sdoConfig>
 			<syncManager idx="2" dir="out">
 				<pdo idx="1600">

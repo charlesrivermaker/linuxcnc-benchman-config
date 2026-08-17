@@ -217,6 +217,26 @@ static int cia_1joint_state_machine(int joint_num)
         joints[joint_num].motor_pos_cmd = joints[joint_num].motor_pos_fb;
     }
 
+    // The drive can fault mid-homing (e.g. its own internal homing-time-limit,
+    // 2010.09h, expiring) and cia402.comp auto-clears/re-enables it on its own --
+    // invisibly to us. Without this check we'd keep blindly re-asserting home=1
+    // every cycle and the drive would keep silently restarting the same doomed
+    // attempt, which looks like a repeating seek/backoff loop that never resolves
+    // and permanently blocks jogging. Abort our own sequence the instant we see it.
+    if ((chomestate[joint_num] == CIA_BEGIN || chomestate[joint_num] == CIA_RUNNING) &&
+        ciaH[joint_num].Status.b.Fault)
+    {
+        rtapi_print_msg(RTAPI_MSG_ERR,
+                        "cia402_homecomp: joint %d drive fault during homing, aborting\n", joint_num);
+        ciaH[joint_num].start_cia_homing = 0;
+        H[joint_num].homing = 0;
+        H[joint_num].homed = 0;
+        H[joint_num].home_state = HOME_IDLE;
+        settle_count[joint_num] = 0;
+        chomestate[joint_num] = CIA_IDLE;
+        return 0;
+    }
+
     switch (chomestate[joint_num])
     {
     case CIA_BEGIN:
