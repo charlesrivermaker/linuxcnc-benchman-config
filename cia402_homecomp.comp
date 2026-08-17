@@ -246,13 +246,18 @@ static int cia_1joint_state_machine(int joint_num)
         chomestate[joint_num] = nextcstate;
         break;
     case CIA_RUNNING:
-        // Require the drive's completion bits to hold for CIA_SETTLE_CYCLES in a row
-        // before trusting them -- cia402.comp itself uses a similar debounce (100
-        // cycles) before trusting its own stat_homed, because the axis can still be
-        // settling for a few cycles right after the statusword bits first flip. Handing
-        // control back to normal motion before that settling is done is what was
-        // tripping the following-error fault right after homing appeared to finish.
-        if (ciaH[joint_num].Status.b.HomingCompletedOutput && ciaH[joint_num].Status.b.HomingComplete)
+        // Bit 12 (HomingCompletedOutput) mirrors a drive digital-output function that
+        // isn't assigned to anything in this config, so it never goes high -- observed
+        // stuck at 0 even after the drive's own genuine completion flag (bit 15,
+        // HomingComplete) went high. Accept either bit rather than requiring both.
+        //
+        // Require whichever bit fires to hold for CIA_SETTLE_CYCLES in a row before
+        // trusting it -- cia402.comp itself uses a similar debounce (100 cycles) before
+        // trusting its own stat_homed, because the axis can still be settling for a few
+        // cycles right after the statusword bit first flips. Handing control back to
+        // normal motion before that settling is done is what was tripping the
+        // following-error fault right after homing appeared to finish.
+        if (ciaH[joint_num].Status.b.HomingCompletedOutput || ciaH[joint_num].Status.b.HomingComplete)
         {
             settle_count[joint_num]++;
             if (settle_count[joint_num] >= CIA_SETTLE_CYCLES)
