@@ -179,6 +179,8 @@ static int cia_1joint_state_machine(int joint_num)
     static hal_u32_t last_statusword[EMCMOT_MAX_JOINTS] = {0};
     static long long last_print_ns[EMCMOT_MAX_JOINTS] = {0};
     static long long homing_start_ns[EMCMOT_MAX_JOINTS] = {0};
+    static double saved_max_ferror[EMCMOT_MAX_JOINTS] = {0};
+    static double saved_min_ferror[EMCMOT_MAX_JOINTS] = {0};
     cia_home_state_t nextcstate;
 
     if (H[joint_num].home_state == HOME_IDLE)
@@ -196,6 +198,8 @@ static int cia_1joint_state_machine(int joint_num)
             settle_count[joint_num] = 0;
             ciaH[joint_num].start_cia_homing = 0;
             H[joint_num].homing = 0;
+            joints[joint_num].max_ferror = saved_max_ferror[joint_num];
+            joints[joint_num].min_ferror = saved_min_ferror[joint_num];
         }
         return 0;
     }
@@ -208,6 +212,18 @@ static int cia_1joint_state_machine(int joint_num)
         last_statusword[joint_num] = 0;
         homing_start_ns[joint_num] = rtapi_get_time();
         last_print_ns[joint_num] = homing_start_ns[joint_num];
+        // Widen the following-error tolerance for the duration of the drive-native
+        // move instead of continuously chasing pos_cmd to pos_fb. cia402.comp mirrors
+        // pos_cmd into object 607A (target-position) every cycle regardless of opmode,
+        // so continuously syncing pos_cmd fed the drive a constantly-changing 607A
+        // throughout the entire homing move while it was internally in Homing mode --
+        // suspected of causing the repeated seek/backoff loop, since the drive is
+        // meant to ignore 607A in that mode but apparently doesn't do so cleanly.
+        // Leaving pos_cmd untouched keeps 607A pinned at one static value instead.
+        saved_max_ferror[joint_num] = joints[joint_num].max_ferror;
+        saved_min_ferror[joint_num] = joints[joint_num].min_ferror;
+        joints[joint_num].max_ferror = 1.0e6;
+        joints[joint_num].min_ferror = 1.0e6;
         chomestate[joint_num] = CIA_BEGIN;
     }
 
@@ -231,18 +247,6 @@ static int cia_1joint_state_machine(int joint_num)
         last_statusword[joint_num] = ciaH[joint_num].Status.Word;
     }
 
-    // The drive moves the joint on its own during CIA homing, invisible to LinuxCNC's
-    // trajectory planner. Glue the commanded position to actual feedback every cycle
-    // so the core following-error check (pos_cmd vs pos_fb, runs regardless of homing
-    // state) never sees the drive-driven motion as an error.
-    if (chomestate[joint_num] == CIA_BEGIN || chomestate[joint_num] == CIA_RUNNING)
-    {
-        joints[joint_num].free_tp.curr_pos = joints[joint_num].pos_fb;
-        joints[joint_num].free_tp.pos_cmd = joints[joint_num].pos_fb;
-        joints[joint_num].pos_cmd = joints[joint_num].pos_fb;
-        joints[joint_num].motor_pos_cmd = joints[joint_num].motor_pos_fb;
-    }
-
     // The drive can fault mid-homing (e.g. its own internal homing-time-limit,
     // 2010.09h, expiring) and cia402.comp auto-clears/re-enables it on its own --
     // invisibly to us. Without this check we'd keep blindly re-asserting home=1
@@ -260,6 +264,8 @@ static int cia_1joint_state_machine(int joint_num)
         H[joint_num].home_state = HOME_IDLE;
         settle_count[joint_num] = 0;
         chomestate[joint_num] = CIA_IDLE;
+        joints[joint_num].max_ferror = saved_max_ferror[joint_num];
+        joints[joint_num].min_ferror = saved_min_ferror[joint_num];
         return 0;
     }
 
@@ -299,6 +305,16 @@ static int cia_1joint_state_machine(int joint_num)
         break;
     case CIA_FINISHED:
         rtapi_print("cia402_homecomp: joint %d homing complete\n", joint_num);
+        // One-time catch-up: the drive moved the joint on its own throughout the
+        // homing move while pos_cmd was left untouched (see the HOME_START block),
+        // so snap it to the now-final actual position before handing control back
+        // to normal motion, avoiding a phantom jog toward the old stale pos_cmd.
+        joints[joint_num].free_tp.curr_pos = joints[joint_num].pos_fb;
+        joints[joint_num].free_tp.pos_cmd = joints[joint_num].pos_fb;
+        joints[joint_num].pos_cmd = joints[joint_num].pos_fb;
+        joints[joint_num].motor_pos_cmd = joints[joint_num].motor_pos_fb;
+        joints[joint_num].max_ferror = saved_max_ferror[joint_num];
+        joints[joint_num].min_ferror = saved_min_ferror[joint_num];
         ciaH[joint_num].start_cia_homing = 0;
         H[joint_num].homing = 0;
         H[joint_num].homed = 1;
