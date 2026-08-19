@@ -12,35 +12,18 @@ set ::watchlist {
     pin+lcec.read-all.time
     pin+lcec.0.pll-out
     pin+lcec.0.pll-err
-    pin+lcec.0.y-servo.in-1
-    pin+lcec.0.y-servo.in-2
-    pin+lcec.0.y-servo.in-3
-    pin+lcec.0.y-servo.in-5
-    pin+lcec.0.y-servo.in-6
-    pin+lcec.0.y-servo.in-home
-    pin+lcec.0.y-servo.neg-limit
-    pin+lcec.0.y-servo.pos-limit
-    pin+cia402.2.enable
-    pin+lcec.0.EL2008-digital-out-2.dout-7
-    pin+lcec.0.z-servo.neg-limit
-    pin+lcec.0.z-servo.position-actual
-    pin+lcec.0.z-servo.pos-limit
-    sig+atc-down-solenoid
-    sig+atc-down-switch
-    sig+atc-up-switch
-    sig+atc-in-solenoid
-    sig+atc-in-switch
-    sig+atc-out-switch
-    pin+cia402.0.controlword
-    pin+cia402.0.drv-target-position
-    pin+cia402.0.enable
+    pin+cia402.0.home
     pin+cia402.0.opmode
-    pin+cia402.0.stat-homing
-    pin+cia402.0.statusword
-    sig+x-amp-fault
-    sig+x-controlword
-    sig+y-controlword
-    sig+z-controlword
+    pin+cia402.1.opmode
+    pin+cia402.2.opmode
+    pin+lcec.0.x-servo.control-word
+    pin+lcec.0.y-servo.control-word
+    pin+lcec.0.z-servo.control-word
+    pin+lcec.0.x-servo.status-word
+    pin+lcec.0.y-servo.status-word
+    pin+lcec.0.z-servo.status-word
+    pin+lcec.0.x-servo.fault-code
+    pin+halui.joint.0.home
 }
 set ::workmode watchhal
 set ::watchInterval 100
