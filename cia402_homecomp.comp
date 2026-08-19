@@ -177,6 +177,8 @@ static int cia_1joint_state_machine(int joint_num)
     static cia_home_state_t chomestate[EMCMOT_MAX_JOINTS] = {0};
     static int settle_count[EMCMOT_MAX_JOINTS] = {0};
     static hal_u32_t last_statusword[EMCMOT_MAX_JOINTS] = {0};
+    static long long last_print_ns[EMCMOT_MAX_JOINTS] = {0};
+    static long long homing_start_ns[EMCMOT_MAX_JOINTS] = {0};
     cia_home_state_t nextcstate;
 
     if (H[joint_num].home_state == HOME_IDLE)
@@ -204,19 +206,28 @@ static int cia_1joint_state_machine(int joint_num)
         H[joint_num].homed = 0;
         settle_count[joint_num] = 0;
         last_statusword[joint_num] = 0;
+        homing_start_ns[joint_num] = rtapi_get_time();
+        last_print_ns[joint_num] = homing_start_ns[joint_num];
         chomestate[joint_num] = CIA_BEGIN;
     }
 
-    // Debug: log every statusword change while actively homing, so the bit-by-bit
-    // sequence the drive goes through during a homing attempt can be read back out
-    // of the log afterward instead of having to catch it live with halcmd.
+    // Debug: log every statusword change while actively homing, with real elapsed
+    // time (not just order), so a fast software oscillation can be told apart from
+    // the drive genuinely spending real time on each internal retry -- console
+    // output can appear batched due to log buffering, but these timestamps are
+    // captured at the moment the change was actually observed in the RT thread.
     if ((chomestate[joint_num] == CIA_BEGIN || chomestate[joint_num] == CIA_RUNNING) &&
         (ciaH[joint_num].Status.Word != last_statusword[joint_num]))
     {
+        long long now = rtapi_get_time();
         rtapi_print_msg(RTAPI_MSG_ERR,
-                        "cia402_homecomp: joint %d statusword 0x%04X -> 0x%04X\n",
+                        "cia402_homecomp: joint %d statusword 0x%04X -> 0x%04X "
+                        "(+%lld ms this step, %lld ms since start)\n",
                         joint_num, (unsigned)last_statusword[joint_num],
-                        (unsigned)ciaH[joint_num].Status.Word);
+                        (unsigned)ciaH[joint_num].Status.Word,
+                        (now - last_print_ns[joint_num]) / 1000000,
+                        (now - homing_start_ns[joint_num]) / 1000000);
+        last_print_ns[joint_num] = now;
         last_statusword[joint_num] = ciaH[joint_num].Status.Word;
     }
 
