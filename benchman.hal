@@ -73,12 +73,10 @@ net y-amp-fault => joint.1.amp-fault-in <= cia402.1.drv-fault
 net y-status-word lcec.0.y-servo.status-word => cia402.1.statusword
 net y-drv-act-pos lcec.0.y-servo.position-actual => cia402.1.drv-actual-position
 net y-opmode-display lcec.0.y-servo.mode-display => cia402.1.opmode-display
-#net y-drv-act-velo lcec.0.y-servo.actual-velocity => cia402.1.drv-actual-velocity
 
 net y-controlword cia402.1.controlword => lcec.0.y-servo.control-word
 net y-drv-target-pos cia402.1.drv-target-position => lcec.0.y-servo.target-position
 net y-modes-of-operation cia402.1.opmode => lcec.0.y-servo.control-mode
-#net y-drv-target-velo cia402.1.drv-target-velocity => lcec.0.y-servo.target-velocity
 
 setp lcec.0.y-servo.homing-method [JOINT_1]CIA402_HOMING_METHOD
 setp lcec.0.y-servo.home-offset [JOINT_1]CIA402_HOME_OFFSET_COUNTS
@@ -109,12 +107,10 @@ net z-amp-fault => joint.2.amp-fault-in <= cia402.2.drv-fault
 net z-status-word lcec.0.z-servo.status-word => cia402.2.statusword
 net z-drv-act-pos lcec.0.z-servo.position-actual => cia402.2.drv-actual-position
 net z-opmode-display lcec.0.z-servo.mode-display => cia402.2.opmode-display
-#net z-drv-act-velo lcec.0.z-servo.actual-velocity => cia402.2.drv-actual-velocity
 
 net z-controlword cia402.2.controlword => lcec.0.z-servo.control-word
 net z-drv-target-pos cia402.2.drv-target-position => lcec.0.z-servo.target-position
 net z-modes-of-operation cia402.2.opmode => lcec.0.z-servo.control-mode
-#net z-drv-target-velo cia402.2.drv-target-velocity => lcec.0.z-servo.target-velocity
 
 setp lcec.0.z-servo.home-offset [JOINT_2]CIA402_HOME_OFFSET_COUNTS
 setp lcec.0.z-servo.homing-method [JOINT_2]CIA402_HOMING_METHOD
