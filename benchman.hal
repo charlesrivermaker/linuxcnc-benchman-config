@@ -36,7 +36,7 @@ net x-amp-fault => joint.0.amp-fault-in <= cia402.0.drv-fault
 net x-status-word lcec.0.x-servo.status-word => cia402.0.statusword
 net x-drv-act-pos lcec.0.x-servo.position-actual => cia402.0.drv-actual-position
 net x-opmode-display lcec.0.x-servo.mode-display => cia402.0.opmode-display
-net x-drv-act-velo lcec.0.x-servo.actual-velocity => cia402.0.drv-actual-velocity
+net x-drv-act-velo lcec.0.x-servo.velocity-actual => cia402.0.drv-actual-velocity
 
 net x-controlword cia402.0.controlword => lcec.0.x-servo.control-word
 net x-drv-target-pos cia402.0.drv-target-position => lcec.0.x-servo.target-position
