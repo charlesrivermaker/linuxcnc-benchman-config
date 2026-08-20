@@ -36,27 +36,22 @@ net x-amp-fault => joint.0.amp-fault-in <= cia402.0.drv-fault
 net x-status-word lcec.0.x-servo.status-word => cia402.0.statusword
 net x-drv-act-pos lcec.0.x-servo.position-actual => cia402.0.drv-actual-position
 net x-opmode-display lcec.0.x-servo.mode-display => cia402.0.opmode-display
-#net x-drv-act-velo lcec.0.x-servo.actual-velocity => cia402.0.drv-actual-velocity
+net x-drv-act-velo lcec.0.x-servo.actual-velocity => cia402.0.drv-actual-velocity
 
 net x-controlword cia402.0.controlword => lcec.0.x-servo.control-word
 net x-drv-target-pos cia402.0.drv-target-position => lcec.0.x-servo.target-position
 net x-modes-of-operation cia402.0.opmode => lcec.0.x-servo.control-mode
-#net x-drv-target-velo cia402.0.drv-target-velocity => lcec.0.x-servo.target-velocity
+net x-drv-target-velo cia402.0.drv-target-velocity => lcec.0.x-servo.target-velocity
 
-# Drive-native CiA402 homing, triggered via stock LinuxCNC's own index-pulse homing
-# path (HOME_USE_INDEX=YES in the INI) instead of a custom homing module. Homing
-# method, speeds and accel are pushed into the drive's own object dictionary every
-# EtherCAT start via these RPDOs. cia402.0.home is wired straight to joint.0.index-
-# enable: homing.c sets that pin true to request a search and waits for it to clear;
-# cia402.comp treats "true" as "start the drive's internal homing move" and clears
-# the pin itself once the drive reports done, which homing.c then reads as "index
-# pulse arrived" -- no custom HAL component needed for the trigger.
-setp lcec.0.x-servo.home-offset [JOINT_0]CIA402_HOME_OFFSET_COUNTS
 setp lcec.0.x-servo.homing-method [JOINT_0]CIA402_HOMING_METHOD
+setp lcec.0.x-servo.home-offset [JOINT_0]CIA402_HOME_OFFSET_COUNTS
 setp lcec.0.x-servo.homing-high-velocity [JOINT_0]CIA402_HOMING_SEARCH_VELOCITY
 setp lcec.0.x-servo.homing-low-velocity [JOINT_0]CIA402_HOMING_LATCH_VELOCITY
 setp lcec.0.x-servo.homing-acceleration [JOINT_0]CIA402_HOMING_ACCELERATION
-net x-index-enable joint.0.index-enable cia402.0.home
+
+net 0-home-request joint.0.request-custom-homing cia402.0.home joint.0.index-enable
+net 0-homing       joint.0.is-custom-homing  cia402.0.stat-homing
+net 0-homed          joint.0.custom-homing-finished cia402.0.stat-homed
 
 #
 #  AXIS Y
@@ -85,12 +80,15 @@ net y-drv-target-pos cia402.1.drv-target-position => lcec.0.y-servo.target-posit
 net y-modes-of-operation cia402.1.opmode => lcec.0.y-servo.control-mode
 #net y-drv-target-velo cia402.1.drv-target-velocity => lcec.0.y-servo.target-velocity
 
-setp lcec.0.y-servo.home-offset [JOINT_1]CIA402_HOME_OFFSET_COUNTS
 setp lcec.0.y-servo.homing-method [JOINT_1]CIA402_HOMING_METHOD
+setp lcec.0.y-servo.home-offset [JOINT_1]CIA402_HOME_OFFSET_COUNTS
 setp lcec.0.y-servo.homing-high-velocity [JOINT_1]CIA402_HOMING_SEARCH_VELOCITY
 setp lcec.0.y-servo.homing-low-velocity [JOINT_1]CIA402_HOMING_LATCH_VELOCITY
 setp lcec.0.y-servo.homing-acceleration [JOINT_1]CIA402_HOMING_ACCELERATION
-net y-index-enable joint.1.index-enable cia402.1.home
+
+net 1-home-request joint.1.request-custom-homing cia402.1.home joint.1.index-enable
+net 1-homing       joint.1.is-custom-homing  cia402.1.stat-homing
+net 1-homed          joint.1.custom-homing-finished cia402.1.stat-homed
 
 #
 #  AXIS Z
@@ -123,7 +121,15 @@ setp lcec.0.z-servo.homing-method [JOINT_2]CIA402_HOMING_METHOD
 setp lcec.0.z-servo.homing-high-velocity [JOINT_2]CIA402_HOMING_SEARCH_VELOCITY
 setp lcec.0.z-servo.homing-low-velocity [JOINT_2]CIA402_HOMING_LATCH_VELOCITY
 setp lcec.0.z-servo.homing-acceleration [JOINT_2]CIA402_HOMING_ACCELERATION
-net z-index-enable joint.2.index-enable cia402.2.home
+
+net 2-home-request joint.2.request-custom-homing cia402.2.home joint.2.index-enable
+net 2-homing       joint.2.is-custom-homing  cia402.2.stat-homing
+net 2-homed          joint.2.custom-homing-finished cia402.2.stat-homed
+
+
+#
+#   ATC inputs & outputs
+#
 
 net atc-down-switch lcec.0.EL1008-digital-in-1.din-0
 net atc-up-switch lcec.0.EL1008-digital-in-1.din-1
