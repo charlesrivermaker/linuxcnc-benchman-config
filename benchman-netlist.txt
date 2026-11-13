@@ -1,0 +1,69 @@
+BENCHMAN XT - PHYSICAL I/O LIST (from benchman.hal)
+====================================================
+Pin numbers are the HAL names (din-0 = first input on the module).
+"1st EL1008" = EL1008-digital-in-1, "1st EL2008" = EL2008-digital-out-1.
+
+INPUTS - 1st EL1008 (8-ch digital input)
+----------------------------------------
+ din-0      atc-down-switch         ATC down switch
+ din-1      atc-up-switch           ATC up switch
+ din-2      atc-in-switch           ATC in switch
+ din-3      atc-out-switch          ATC out switch
+ din-4      (read inverted: din-4-not)  platter-down button
+                                    -> also drives 1st EL2008 dout-1 (atc-down-solenoid)
+ din-5      (read inverted: din-5-not)  platter-index-button
+ din-6      (read inverted: din-6-not)  drawbar-release button
+                                    -> also drives 1st EL2008 dout-4 (spindle-clamp-solenoid)
+ din-7      not used
+
+ (Button names for din-4 and din-6 come from the commented-out lines
+  "platter-down-button" and "drawbar-release-button" in benchman.hal.)
+
+OUTPUTS - 1st EL2008 (8-ch digital output)
+------------------------------------------
+ dout-0     not used
+ dout-1     atc-down-solenoid       ATC down solenoid   (driven by din-4, platter-down button)
+ dout-2     atc-in-solenoid         ATC in solenoid     (nothing drives it in HAL yet)
+ dout-3     not used
+ dout-4     spindle-clamp-solenoid  Spindle clamp solenoid (driven by din-6, drawbar-release button)
+ dout-5..7  not used
+
+NOT USED IN HAL
+---------------
+ 2nd EL1008 (EL1008-digital-in-2), 2nd EL2008 (EL2008-digital-out-2),
+ EL3202-analog-in-1, atc-servo.
+
+SERVO DRIVES (A6-EC) - CN1 HD15 connector wiring
+------------------------------------------------
+ Not defined in benchman.hal (the drives handle these signals internally).
+ Wiring below is from the user, with the CN1 signal names from the A6-EC
+ manual (Electrical Installation, CN1 user control terminal). Same
+ premade HD15 cable on each drive (X, Y, Z).
+
+ CN1 pin  cable color   A6 signal            connected to
+ -------  ------------  -------------------  ---------------------------------------
+   10     Blue          DI1 (pos limit)      positive limit switch
+    9     Green         DI2 (neg limit)      negative limit switch
+   14     Pink          COM-                 common side of both limit switches
+   13     White         COM+  (DI common)    jumpered to pin 15
+   15     Light Green   +24V (internal)      jumpered to pin 13
+    5     Red           DO3+  (Brake)        negative side of servo brake relay coil
+    4     Brown/White   DO3-                 tied to 24V ground
+   (relay coil other side goes to +24V)
+    8     Yellow        DI3 (home switch)    not used
+    7     Orange        DI4 (probe 2)        not used
+   11     Purple        DI5 (probe 1)        not used
+    1     Black         DO1+ (servo ready)   not used
+    6     Red/White     DO1- (servo ready)   not used
+    3     Brown         DO2+ (fault)         not used
+    2     Black/White   DO2- (fault)         not used
+   12     --            (not in the cable color list)
+
+ Per drive, in HAL terms:
+   positive limit switch -> CN1 pin 10 (DI1) -> lcec.0.<x|y|z>-servo.pos-limit (not netted)
+   negative limit switch -> CN1 pin 9  (DI2) -> lcec.0.<x|y|z>-servo.neg-limit (not netted)
+   brake relay           <- CN1 pins 5/4 (DO3, the drive's "Brake" output)
+
+ Check against the DI/DO function parameters in the drive: DI1 = P-OT,
+ DI2 = N-OT, DO3 = brake (BRK-OFF) are the factory defaults. The 60FD
+ pins in ethercat-conf.xml expose the limit inputs but nothing in HAL uses them.
