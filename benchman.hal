@@ -135,9 +135,18 @@ net 2-home-request joint.2.request-custom-homing cia402.2.home joint.2.index-ena
 net 2-homing       joint.2.is-custom-homing  cia402.2.stat-homing
 net 2-homed          joint.2.custom-homing-finished cia402.2.stat-homed
 
+#
+#   Front Panel Inputs
+#
+
+net platter-up-down-frontpanel-button lcec.0.EL1008-digital-in-1.din-4-not => platter-gate.in0
+net platter-index-frontpanel-button lcec.0.EL1008-digital-in-1.din-5-not
+net drawbar-release-frontpanel-button lcec.0.EL1008-digital-in-1.din-6-not
+
+
 
 #
-#   ATC inputs & outputs
+#   ATC inputs 
 #
 
 net atc-down-limit-switch lcec.0.EL1008-digital-in-1.din-0
@@ -145,12 +154,26 @@ net atc-up-limit-switch lcec.0.EL1008-digital-in-1.din-1
 net atc-in-limit-switch lcec.0.EL1008-digital-in-1.din-2
 net atc-out-limit-switch lcec.0.EL1008-digital-in-1.din-3
 
-net platter-up-down-frontpanel-button lcec.0.EL1008-digital-in-1.din-4-not => platter-gate.in0
-net platter-index-frontpanel-button lcec.0.EL1008-digital-in-1.din-5-not
-net drawbar-release-frontpanel-button lcec.0.EL1008-digital-in-1.din-6-not
+#
+#    ATC outputs
+#
 
 net atc-in-solenoid lcec.0.EL2008-digital-out-1.dout-2
 net spindle-clamp-solenoid lcec.0.EL2008-digital-out-1.dout-4
+net taper-blast-solenoid lcec.0.EL2008-digital-out-1.dout-5
+
+#
+#    Spindle Bearing Air Supply Solenoid
+#
+
+net spindle-air-solenoid lcec.0.EL2008-digital-out-1.dout-0
+
+#
+#    Mist & Flood Coolant outputs
+#
+
+net mist-coolant-solenoid lcec.0.EL2008-digital-out-1.dout-6
+net flood-coolant-pump-relay lcec.0.EL2008-digital-out-1.dout-7
 
 #
 #   Manual platter up/down (front panel button toggles atc-down-solenoid)

@@ -25,12 +25,14 @@ INPUTS - 1st EL1008 (8-ch digital input)
 
 OUTPUTS - 1st EL2008 (8-ch digital output)
 ------------------------------------------
- dout-0     not used
+ dout-0     spindle-air-solenoid     Spindle bearing air supply solenoid
  dout-1     atc-down-solenoid        ATC down solenoid        (driven by din-4 toggle OR a future automatic TC request)
  dout-2     atc-in-solenoid          ATC in solenoid          (nothing drives it in HAL yet)
  dout-3     not used
  dout-4     spindle-clamp-solenoid   Spindle clamp solenoid   (nothing drives it in HAL yet)
- dout-5..7  not used
+ dout-5     taper-blast-solenoid     Taper blast solenoid     (nothing drives it in HAL yet)
+ dout-6     mist-coolant-solenoid    Mist coolant solenoid    (nothing drives it in HAL yet)
+ dout-7     flood-coolant-pump-relay Flood coolant pump relay (nothing drives it in HAL yet)
 
  While the platter is manually down (toggle state only, not an automatic TC),
  HAL sets motion.feed-inhibit and motion.jog-inhibit.
