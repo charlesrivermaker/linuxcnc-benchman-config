@@ -5,31 +5,29 @@ Pin numbers are the HAL names (din-0 = first input on the module).
 
 INPUTS - 1st EL1008 (8-ch digital input)
 ----------------------------------------
- Reed switches on the ATC air cylinders (the "-switch" nets):
- din-0      atc-down-switch         reed switch, ATC cylinder down position
- din-1      atc-up-switch           reed switch, ATC cylinder up position
- din-2      atc-in-switch           reed switch, ATC cylinder in position
- din-3      atc-out-switch          reed switch, ATC cylinder out position
+ Reed switches on the ATC air cylinders (the "-limit-switch" nets):
+ din-0      atc-down-limit-switch   reed switch, ATC cylinder down position
+ din-1      atc-up-limit-switch     reed switch, ATC cylinder up position
+ din-2      atc-in-limit-switch     reed switch, ATC cylinder in position
+ din-3      atc-out-limit-switch    reed switch, ATC cylinder out position
 
- Front panel buttons (the "-button" nets):
- din-4      (read inverted: din-4-not)  front panel button: platter-down
-                                    -> also drives 1st EL2008 dout-1 (atc-down-solenoid)
- din-5      (read inverted: din-5-not)  front panel button: platter-index
- din-6      (read inverted: din-6-not)  front panel button: drawbar-release
-                                    -> also drives 1st EL2008 dout-4 (spindle-clamp-solenoid)
+ Front panel buttons (the "-frontpanel-button" nets, read inverted):
+ din-4      din-4-not   platter-up-down-frontpanel-button
+ din-5      din-5-not   platter-index-frontpanel-button
+ din-6      din-6-not   drawbar-release-frontpanel-button
 
  din-7      not used
 
- (Button names for din-4 and din-6 come from the commented-out lines
-  "platter-down-button" and "drawbar-release-button" in benchman.hal.)
+ (The buttons are not wired to the solenoids in HAL; the TC logic that
+  uses them is still to come.)
 
 OUTPUTS - 1st EL2008 (8-ch digital output)
 ------------------------------------------
  dout-0     not used
- dout-1     atc-down-solenoid       ATC down solenoid   (driven by din-4, platter-down button)
- dout-2     atc-in-solenoid         ATC in solenoid     (nothing drives it in HAL yet)
+ dout-1     atc-down-solenoid        ATC down solenoid        (nothing drives it in HAL yet)
+ dout-2     atc-in-solenoid          ATC in solenoid          (nothing drives it in HAL yet)
  dout-3     not used
- dout-4     spindle-clamp-solenoid  Spindle clamp solenoid (driven by din-6, drawbar-release button)
+ dout-4     spindle-clamp-solenoid   Spindle clamp solenoid   (nothing drives it in HAL yet)
  dout-5..7  not used
 
 NOT USED IN HAL
