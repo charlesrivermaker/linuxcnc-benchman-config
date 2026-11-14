@@ -31,8 +31,8 @@ OUTPUTS - 1st EL2008 (8-ch digital output)
  dout-3     not used
  dout-4     spindle-clamp-solenoid   Spindle clamp solenoid   (nothing drives it in HAL yet)
  dout-5     taper-blast-solenoid     Taper blast solenoid     (nothing drives it in HAL yet)
- dout-6     mist-coolant-solenoid    Mist coolant solenoid    (nothing drives it in HAL yet)
- dout-7     flood-coolant-pump-relay Flood coolant pump relay (nothing drives it in HAL yet)
+ dout-6     mist-coolant-solenoid    Mist coolant solenoid    (driven by iocontrol.0.coolant-mist, M7)
+ dout-7     flood-coolant-pump-relay Flood coolant pump relay (driven by iocontrol.0.coolant-flood, M8)
 
  While the platter is manually down (toggle state only, not an automatic TC),
  HAL sets motion.feed-inhibit and motion.jog-inhibit.

@@ -172,8 +172,8 @@ net spindle-air-solenoid lcec.0.EL2008-digital-out-1.dout-0
 #    Mist & Flood Coolant outputs
 #
 
-net mist-coolant-solenoid lcec.0.EL2008-digital-out-1.dout-6
-net flood-coolant-pump-relay lcec.0.EL2008-digital-out-1.dout-7
+net mist-coolant-solenoid iocontrol.0.coolant-mist => lcec.0.EL2008-digital-out-1.dout-6
+net flood-coolant-pump-relay iocontrol.0.coolant-flood => lcec.0.EL2008-digital-out-1.dout-7
 
 #
 #   Manual platter up/down (front panel button toggles atc-down-solenoid)
