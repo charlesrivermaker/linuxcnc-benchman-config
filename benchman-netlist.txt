@@ -13,22 +13,27 @@ INPUTS - 1st EL1008 (8-ch digital input)
 
  Front panel buttons (the "-frontpanel-button" nets, read inverted):
  din-4      din-4-not   platter-up-down-frontpanel-button
+                       -> toggles the ATC down solenoid (dout-1). Lowering is only
+                          allowed when the machine is on and no program is running
+                          (idle or paused is fine); raising is always allowed.
  din-5      din-5-not   platter-index-frontpanel-button
  din-6      din-6-not   drawbar-release-frontpanel-button
 
  din-7      not used
 
- (The buttons are not wired to the solenoids in HAL; the TC logic that
-  uses them is still to come.)
+ (Only din-4 has logic so far; din-5 and din-6 are not used by any logic yet.)
 
 OUTPUTS - 1st EL2008 (8-ch digital output)
 ------------------------------------------
  dout-0     not used
- dout-1     atc-down-solenoid        ATC down solenoid        (nothing drives it in HAL yet)
+ dout-1     atc-down-solenoid        ATC down solenoid        (driven by din-4 toggle OR a future automatic TC request)
  dout-2     atc-in-solenoid          ATC in solenoid          (nothing drives it in HAL yet)
  dout-3     not used
  dout-4     spindle-clamp-solenoid   Spindle clamp solenoid   (nothing drives it in HAL yet)
  dout-5..7  not used
+
+ While the platter is manually down (toggle state only, not an automatic TC),
+ HAL sets motion.feed-inhibit and motion.jog-inhibit.
 
 NOT USED IN HAL
 ---------------

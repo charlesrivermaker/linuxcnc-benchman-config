@@ -4,6 +4,19 @@ loadusr -W lcec_conf ethercat-conf.xml
 loadrt lcec
 loadrt cia402 count=3
 
+# ATC manual platter up/down logic (see "ATC inputs & outputs" below)
+loadrt toggle names=platter-toggle
+loadrt not    names=platter-not-running
+loadrt and2   names=platter-safe,platter-gate
+loadrt or2    names=platter-allow,platter-solenoid-or
+
+addf platter-not-running servo-thread
+addf platter-safe        servo-thread
+addf platter-allow       servo-thread
+addf platter-gate        servo-thread
+addf platter-toggle      servo-thread
+addf platter-solenoid-or servo-thread
+
 addf lcec.read-all servo-thread
 addf cia402.0.read-all servo-thread
 addf cia402.1.read-all servo-thread
@@ -127,17 +140,39 @@ net 2-homed          joint.2.custom-homing-finished cia402.2.stat-homed
 #   ATC inputs & outputs
 #
 
-net atc-down-switch lcec.0.EL1008-digital-in-1.din-0
-net atc-up-switch lcec.0.EL1008-digital-in-1.din-1
-net atc-in-switch lcec.0.EL1008-digital-in-1.din-2
-net atc-out-switch lcec.0.EL1008-digital-in-1.din-3
+net atc-down-limit-switch lcec.0.EL1008-digital-in-1.din-0
+net atc-up-limit-switch lcec.0.EL1008-digital-in-1.din-1
+net atc-in-limit-switch lcec.0.EL1008-digital-in-1.din-2
+net atc-out-limit-switch lcec.0.EL1008-digital-in-1.din-3
 
-#net platter-down-button lcec.0.EL1008-digital-in-1.din-4-not
-net platter-index-button lcec.0.EL1008-digital-in-1.din-5-not
-#net drawbar-release-button lcec.0.EL1008-digital-in-1.din-6-not
+net platter-up-down-frontpanel-button lcec.0.EL1008-digital-in-1.din-4-not => platter-gate.in0
+net platter-index-frontpanel-button lcec.0.EL1008-digital-in-1.din-5-not
+net drawbar-release-frontpanel-button lcec.0.EL1008-digital-in-1.din-6-not
 
-net atc-down-solenoid lcec.0.EL2008-digital-out-1.dout-1 lcec.0.EL1008-digital-in-1.din-4-not
 net atc-in-solenoid lcec.0.EL2008-digital-out-1.dout-2
-net spindle-clamp-solenoid lcec.0.EL2008-digital-out-1.dout-4 lcec.0.EL1008-digital-in-1.din-6-not
+net spindle-clamp-solenoid lcec.0.EL2008-digital-out-1.dout-4
+
+#
+#   Manual platter up/down (front panel button toggles atc-down-solenoid)
+#
+# Lowering is only allowed when the machine is on and no program is running
+# (idle or paused is fine). Raising is always allowed.
+net machine-is-on        halui.machine.is-on       => platter-safe.in0
+net program-is-running   halui.program.is-running  => platter-not-running.in
+net program-not-running  platter-not-running.out   => platter-safe.in1
+net platter-safe         platter-safe.out          => platter-allow.in0
+# allow = safe OR already down (so it can always be raised)
+net platter-manual-down  platter-toggle.out        => platter-allow.in1
+net platter-allowed      platter-allow.out         => platter-gate.in1
+net platter-button-gated platter-gate.out          => platter-toggle.in
+
+# While the platter is manually down: no G-code motion, no jogging.
+# platter-manual-down is the manual state only, so a future automatic tool
+# change (solenoid driven via platter-solenoid-or.in1) does not trigger this.
+net platter-manual-down  => motion.feed-inhibit motion.jog-inhibit
+
+# Solenoid = manual state OR automatic TC request (in1 not connected yet)
+net platter-manual-down  => platter-solenoid-or.in0
+net atc-down-solenoid    platter-solenoid-or.out lcec.0.EL2008-digital-out-1.dout-1
 
 setp iocontrol.0.emc-enable-in 1
