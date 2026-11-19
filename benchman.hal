@@ -176,6 +176,13 @@ net mist-coolant-solenoid iocontrol.0.coolant-mist => lcec.0.EL2008-digital-out-
 net flood-coolant-pump-relay iocontrol.0.coolant-flood => lcec.0.EL2008-digital-out-1.dout-7
 
 #
+#    Tool Length Sensor
+#
+
+
+net tool-length-sensor-blast lcec.0.EL2008-digital-out-1.dout-3
+
+#
 #   Manual platter up/down (front panel button toggles atc-down-solenoid)
 #
 # Lowering is only allowed when the machine is on and no program is running
